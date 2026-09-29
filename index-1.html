@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>한가위 보름달을 채워라!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Song+Myung&family=Gothic+A1:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+<style>
+
+
+  :root{
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+
+    --bg-deep:#080B20;
+    --bg-mid:#141B41;
+    --bg-soft:#1E2657;
+    --panel:rgba(255,255,255,0.055);
+    --panel-strong:rgba(255,255,255,0.09);
+    --panel-border:rgba(255,255,255,0.13);
+    --text-primary:#FFFFFF;
+    --text-secondary:#FFFFFF;
+    --text-muted:#F1F1F6;
+    --gold:#F4C868;
+    --gold-soft:#FBE3AC;
+    --gold-deep:#D9A544;
+    --glow:rgba(244,200,104,0.42);
+    --danger:#E9A7A7;
+    --radius-lg:26px;
+    --radius-md:16px;
+    --font-display:'Song Myung','Nanum Myeongjo',serif;
+    --font-body:'Gothic A1','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  }
+  html{ scroll-padding-top:env(safe-area-inset-top,0px); height:100%; }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    min-height:100%;
+    background:
+      radial-gradient(ellipse 120% 60% at 50% -10%, #202B63 0%, transparent 60%),
+      linear-gradient(180deg,var(--bg-deep) 0%, var(--bg-mid) 55%, var(--bg-soft) 100%);
+    color:var(--text-primary);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    position:relative;
+    word-break:keep-all;
+    overflow-wrap:break-word;
+  }
+  button, input{ font-family:inherit; }
+  button:focus-visible, input:focus-visible, a:focus-visible{
+    outline:2px solid var(--gold-soft);
+    outline-offset:3px;
+  }
+
+  /* ---------- background sky ---------- */
+  #sky{ position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
+  .star{
+    position:absolute; border-radius:50%;
+    background:#F6F4EA; opacity:.5;
+    animation:twinkle 4.5s ease-in-out infinite;
+  }
+  @keyframes twinkle{ 0%,100%{opacity:.15;} 50%{opacity:.85;} }
+  .cloud{
+    position:absolute; border-radius:50%;
+    background:#EDEFFB; opacity:.05; filter:blur(6px);
+  }
+
+  /* ---------- shell ---------- */
+  .app-shell{
+    position:relative; z-index:1;
+    max-width:480px; margin:0 auto;
+    min-height:100vh;
+    padding:36px 22px calc(40px + env(safe-area-inset-bottom,0px));
+    display:flex; flex-direction:column;
+  }
+
+  .screen{ display:none; flex-direction:column; }
+  .screen.active{ display:flex; animation:fadeUp .55s ease both; }
+  @keyframes fadeUp{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+
+  .back-link{
+    align-self:flex-start;
+    background:none; border:none; color:var(--text-secondary);
+    font-size:17px; padding:6px 0 18px; cursor:pointer;
+  }
+  .back-link:hover{ color:var(--gold-soft); }
+
+  /* ---------- landing ---------- */
+  .eyebrow-date{
+    color:var(--gold-soft); font-size:16px; letter-spacing:.02em; margin:0 0 10px;
+  }
+  .hero-title{
+    font-family:var(--font-display); font-weight:400;
+    font-size:42px; line-height:1.28; margin:0 0 18px; color:var(--text-primary);
+  }
+  .hero-desc{
+    font-size:18px; line-height:1.7; color:var(--text-secondary); margin:0 0 30px;
+  }
+  .hero-desc strong{ color:var(--gold-soft); font-weight:600; }
+
+  .moon-strip{ display:flex; align-items:center; gap:6px; margin-bottom:26px; }
+  .moon-strip .step-line{ flex:1; height:1px; background:var(--panel-border); }
+
+  .grade-cards{ display:flex; flex-direction:column; gap:12px; margin-bottom:22px; }
+  .grade-card{
+    display:flex; align-items:center; gap:16px;
+    background:var(--panel); border:1px solid var(--panel-border);
+    border-radius:var(--radius-md); padding:14px 16px;
+    backdrop-filter:blur(6px);
+  }
+  .grade-card .grade-info{ flex:1; }
+  .grade-step{ margin:0; font-size:15px; color:var(--text-muted); }
+  .grade-name{ margin:2px 0; font-family:var(--font-display); font-size:22px; color:var(--text-primary); }
+  .grade-prize{ margin:0; font-size:16px; color:var(--gold-soft); font-weight:700; }
+
+  .landing-note{
+    text-align:center; font-size:16px; color:var(--text-secondary);
+    margin:4px 0 18px; line-height:1.6;
+  }
+  .landing-note strong{ color:var(--gold); }
+
+  /* ---------- shared cta ---------- */
+  .cta-primary{
+    display:block; width:100%; text-align:center; text-decoration:none;
+    background:linear-gradient(135deg,var(--gold-soft),var(--gold-deep));
+    color:#241706; font-weight:700; font-size:19px;
+    border:none; border-radius:999px; padding:16px 20px; cursor:pointer;
+    box-shadow:0 10px 28px rgba(217,165,68,0.3);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .cta-primary:hover{ transform:translateY(-1px); box-shadow:0 14px 34px rgba(217,165,68,0.38); }
+  .cta-primary:active{ transform:translateY(0); }
+
+  /* ---------- lookup ---------- */
+  .lookup-title{
+    font-family:var(--font-display); font-weight:400; font-size:30px;
+    line-height:1.35; margin:6px 0 10px;
+  }
+  .lookup-desc{ color:var(--text-secondary); font-size:17px; margin:0 0 28px; }
+  .lookup-form input{
+    width:100%; padding:16px 18px; font-size:19px;
+    border-radius:var(--radius-md); border:1px solid var(--panel-border);
+    background:var(--panel); color:var(--text-primary); margin-bottom:12px;
+  }
+  .lookup-form input::placeholder{ color:var(--text-muted); opacity:.75; }
+  .lookup-error{ color:var(--danger); font-size:16px; margin:12px 2px 0; display:none; }
+  .lookup-error.show{ display:block; }
+  .lookup-hint{ color:var(--text-muted); font-size:14.5px; margin:16px 2px 0; text-align:center; }
+  .shake{ animation:shake .32s ease; }
+  @keyframes shake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+
+  /* ---------- result ---------- */
+  .result-name{ text-align:center; color:var(--text-secondary); font-size:18px; margin:4px 0 4px; }
+  .result-moon-wrap{ position:relative; width:180px; height:180px; margin:0 auto 22px; }
+  .moon{ position:relative; width:100%; height:100%; border-radius:50%; }
+  .moon.small{ width:100%; height:100%; }
+
+  .moon.phase-new{
+    background:radial-gradient(circle at 38% 32%, #232B58, #10143A 72%);
+    box-shadow:inset 0 0 22px rgba(120,140,220,0.18), 0 0 30px rgba(70,90,190,0.08);
+    border:1px solid rgba(255,255,255,0.09);
+  }
+  .moon.phase-crescent{
+    background:radial-gradient(circle at 38% 32%, var(--gold-soft), var(--gold-deep) 78%);
+    box-shadow:0 0 46px var(--glow);
+    overflow:hidden;
+  }
+  .moon.phase-crescent::after{
+    content:''; position:absolute; top:-10%; left:-32%;
+    width:118%; height:118%; border-radius:50%; background:var(--bg-mid);
+  }
+  .moon.phase-half{
+    background:linear-gradient(90deg, var(--bg-mid) 0 50%, var(--gold-soft) 50% 100%);
+    box-shadow:0 0 52px var(--glow);
+  }
+  .moon.phase-full{
+    background:radial-gradient(circle at 40% 35%, #FFF7E2, var(--gold-soft) 52%, var(--gold-deep) 100%);
+    box-shadow:0 0 60px var(--glow), 0 0 130px rgba(244,200,104,0.28);
+  }
+  .sparkles{ position:absolute; inset:-24px; opacity:0; transition:opacity .5s ease; pointer-events:none; }
+  .result-moon-wrap.is-full .sparkles{ opacity:1; }
+  .sparkle{ position:absolute; width:5px; height:5px; background:var(--gold-soft); border-radius:50%; animation:twinkle 2.4s ease-in-out infinite; }
+
+  .result-grade{
+    font-family:var(--font-display); font-weight:400; font-size:29px;
+    text-align:center; margin:0 0 8px; color:var(--text-primary);
+  }
+  .result-time{ text-align:center; font-size:18px; color:var(--gold-soft); font-weight:600; margin:0 0 26px; }
+
+  .progress-wrap{ margin-bottom:10px; }
+  .progress-track{ height:10px; border-radius:999px; background:rgba(255,255,255,0.08); overflow:hidden; }
+  .progress-fill{ height:100%; border-radius:999px; width:0%; background:linear-gradient(90deg,var(--gold-deep),var(--gold-soft)); transition:width .7s ease; }
+  .progress-meta{ display:flex; justify-content:flex-end; margin-top:6px; }
+  .progress-meta span{ font-size:15px; color:var(--text-muted); font-weight:600; }
+
+  .result-remain-text{ text-align:center; font-size:18px; color:var(--text-primary); margin:6px 0 22px; font-weight:600; }
+
+  .prize-banner{
+    background:var(--panel); border:1px solid var(--panel-border);
+    border-radius:var(--radius-md); padding:14px 16px; text-align:center;
+    font-size:17px; color:var(--gold-soft); margin-bottom:22px; backdrop-filter:blur(6px); font-weight:600;
+  }
+  .prize-banner.hidden{ display:none; }
+
+  .step-track{
+    display:flex; align-items:center; gap:4px; margin:26px 0 6px;
+  }
+  .step-track .step{ display:flex; flex-direction:column; align-items:center; gap:3px; flex-shrink:0; }
+  .step-track .step-icon{ font-size:18px; filter:grayscale(1) brightness(.7); }
+  .step-track .step.reached .step-icon{ filter:none; }
+  .step-track .step-label{ font-size:12.5px; color:var(--text-muted); }
+  .step-track .step.reached .step-label{ color:var(--gold-soft); }
+  .step-track .step-line{ flex:1; height:1px; background:var(--panel-border); }
+  .step-track .step-line.reached{ background:var(--gold-deep); }
+  .step-track .step.current .step-icon{
+    filter:none;
+    transform:scale(1.35);
+    text-shadow:0 0 12px var(--glow);
+  }
+  .step-track .step.current .step-label{ color:var(--gold); font-weight:700; }
+
+  /* ---------- 결과 카드 RC코드 ---------- */
+  .result-code{
+    text-align:center; font-size:15px; color:var(--text-muted);
+    margin:0 0 20px; letter-spacing:.06em;
+  }
+
+  /* ---------- 랜딩 집계 기준 안내 ---------- */
+  .scope-note strong{ color:var(--gold-soft); font-weight:700; }
+  .scope-note{
+    background:var(--panel); border:1px solid var(--panel-border);
+    border-radius:var(--radius-md); padding:12px 14px;
+    font-size:15px; line-height:1.6; color:var(--text-secondary);
+    margin:0 0 26px;
+  }
+
+  /* ---------- 공통 푸터 ---------- */
+  .app-footer{
+    margin-top:auto; padding-top:30px; text-align:center;
+  }
+  .data-asof{
+    font-size:14.5px; color:var(--text-muted); margin:0;
+  }
+  /* ---------- 관리자 화면 ---------- */
+  .admin-title{
+    font-family:var(--font-display); font-weight:400; font-size:26px;
+    margin:6px 0 6px;
+  }
+  .admin-desc{ color:var(--text-secondary); font-size:16px; line-height:1.6; margin:0 0 20px; }
+  .admin-block{
+    background:var(--panel); border:1px solid var(--panel-border);
+    border-radius:var(--radius-md); padding:16px; margin-bottom:14px;
+  }
+  .admin-block h3{
+    font-size:16px; margin:0 0 10px; color:var(--gold-soft); font-weight:700;
+  }
+  .admin-field{ display:block; font-size:15px; color:var(--text-secondary); margin:0 0 6px; }
+  .admin-block input[type="text"]{
+    width:100%; padding:12px 14px; font-size:17px;
+    border-radius:12px; border:1px solid var(--panel-border);
+    background:rgba(255,255,255,0.06); color:var(--text-primary);
+  }
+  .file-pick{
+    display:block; width:100%; text-align:center;
+    border:1px dashed var(--panel-border); border-radius:14px;
+    padding:20px 16px; font-size:17px; color:var(--text-primary);
+    cursor:pointer; background:rgba(255,255,255,0.04);
+  }
+  .file-pick:hover{ border-color:var(--gold-soft); color:var(--gold-soft); }
+  .file-pick input{ display:none; }
+  .range-row{ display:flex; align-items:center; gap:10px; }
+  .range-row input{ flex:1; min-width:0; }
+  .range-sep{ color:var(--text-muted); font-size:17px; }
+
+  .admin-status{ font-size:15.5px; line-height:1.6; margin:12px 0 0; color:var(--text-secondary); }
+  .admin-status.err{ color:var(--danger); }
+
+  .tally{ list-style:none; padding:0; margin:0; }
+  .tally li{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding:9px 0; border-bottom:1px solid rgba(255,255,255,0.07);
+    font-size:16.5px;
+  }
+  .tally li:last-child{ border-bottom:none; }
+  .tally .t-label{ color:var(--text-primary); }
+  .tally .t-num{ font-weight:700; color:var(--gold-soft); }
+  .tally .t-sub{ font-size:14px; color:var(--text-muted); margin-left:6px; font-weight:400; }
+
+  .btn-secondary{
+    display:block; width:100%; text-align:center;
+    background:rgba(255,255,255,0.08); color:var(--text-primary);
+    border:1px solid var(--panel-border); border-radius:999px;
+    padding:14px 18px; font-size:17px; font-weight:600; cursor:pointer;
+  }
+  .btn-secondary:hover{ border-color:var(--gold-soft); color:var(--gold-soft); }
+  .btn-secondary[disabled]{ opacity:.45; cursor:default; }
+
+  .privacy-note{
+    font-size:14px; line-height:1.6; color:var(--text-muted); margin:0;
+  }
+  .admin-entry{
+    background:none; border:none; color:var(--text-muted);
+    font-size:13.5px; text-decoration:underline; cursor:pointer;
+    padding:6px; margin-top:4px;
+  }
+  .data-badge{
+    display:inline-block; font-size:14px; color:var(--gold-soft);
+    background:rgba(244,200,104,0.12); border:1px solid rgba(244,200,104,0.3);
+    border-radius:999px; padding:5px 12px; margin:0 0 16px;
+  }
+  .data-badge.hidden{ display:none; }
+
+  .proto-note{ text-align:center; font-size:13.5px; color:var(--text-muted); margin-top:8px; }
+
+  @media (prefers-reduced-motion: reduce){
+    .star, .sparkle, .screen.active, .shake{ animation:none !important; }
+  }
+
+  @media (min-width:520px){
+    .hero-title{ font-size:48px; }
+  }
+
+  /* ---------- 관리자 잠금 ---------- */
+  .lock-wrap{ max-width:340px; margin:40px auto 0; text-align:center; }
+  .lock-wrap h2{ font-family:var(--font-display); font-weight:400; font-size:26px; margin:0 0 10px; }
+  .lock-wrap p{ color:var(--text-secondary); font-size:16px; margin:0 0 22px; }
+  .lock-wrap input{
+    width:100%; padding:15px 16px; font-size:18px; text-align:center;
+    border-radius:var(--radius-md); border:1px solid var(--panel-border);
+    background:var(--panel); color:var(--text-primary); margin-bottom:12px;
+  }
+  .lock-err{ color:var(--danger); font-size:15.5px; margin:12px 0 0; display:none; }
+  .lock-err.show{ display:block; }
+
+  /* ---------- 파일 인식 목록 ---------- */
+  .src-list{ list-style:none; padding:0; margin:12px 0 0; }
+  .src-list li{
+    font-size:15px; line-height:1.55; padding:10px 0;
+    border-bottom:1px solid rgba(255,255,255,0.07); color:var(--text-secondary);
+  }
+  .src-list li:last-child{ border-bottom:none; }
+  .src-kind{ color:var(--gold-soft); font-weight:700; }
+  .src-warn{ color:var(--danger); }
+  .chip-row{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  .chip{
+    background:rgba(255,255,255,0.08); border:1px solid var(--panel-border);
+    color:var(--text-primary); border-radius:999px;
+    padding:8px 14px; font-size:14.5px; cursor:pointer;
+  }
+  .chip:hover{ border-color:var(--gold-soft); color:var(--gold-soft); }
+  .warn-box{
+    background:rgba(233,167,167,0.1); border:1px solid rgba(233,167,167,0.35);
+    border-radius:12px; padding:12px 14px; margin:12px 0 0;
+    font-size:15px; line-height:1.6; color:#F6D4D4;
+  }
+  .warn-box.hidden{ display:none; }
+
+  .results-badge{
+    text-align:center; font-size:17px; font-weight:700; color:var(--gold);
+    margin:0 0 14px;
+  }
+  .prize-head{ display:block; }
+  .prize-sub{ display:block; font-size:15px; font-weight:500; color:var(--text-secondary); margin-top:6px; }
+  .prize-banner.is-winner{
+    border-color:rgba(244,200,104,0.7);
+    background:rgba(244,200,104,0.14);
+    color:var(--gold); font-size:18px;
+    box-shadow:0 0 24px rgba(244,200,104,0.25);
+  }
+  .prize-banner.is-lose{ color:var(--text-primary); }
+  .notice-line{
+    font-size:14.5px; line-height:1.6; color:var(--text-muted);
+    margin:8px 0 0; text-align:center;
+  }
+</style>
+</head>
+<body>
+  <div id="sky"></div>
+
+  <div class="app-shell">
+
+<!-- ===== 1. 랜딩 ===== -->
+    <section class="screen active" id="screen-landing">
+      <div class="moon-strip">
+        <span style="font-size:16px;">🌑</span>
+        <div class="step-line"></div>
+        <span style="font-size:16px;">🌒</span>
+        <div class="step-line"></div>
+        <span style="font-size:16px;">🌓</span>
+        <div class="step-line"></div>
+        <span style="font-size:16px;">🌕</span>
+      </div>
+
+      <p class="eyebrow-date">2026.09.24 – 09.27</p>
+      <h1 class="hero-title">한가위<br/>보름달을 채워라!</h1>
+      <p class="hero-desc">추석 연휴, MOVE·R튜브를 학습하고<br/><strong>나의 한가위 달</strong>을 완성해보세요.</p>
+
+      <div class="grade-cards">
+        <div class="grade-card">
+          <div class="moon small phase-crescent" style="width:46px;height:46px;"></div>
+          <div class="grade-info">
+            <p class="grade-step">학습 START · 1분 이상</p>
+            <p class="grade-name">초승달</p>
+          </div>
+          <p class="grade-prize"><span id="prize-crescent">50</span>명 추첨</p>
+        </div>
+        <div class="grade-card">
+          <div class="moon small phase-half" style="width:46px;height:46px;"></div>
+          <div class="grade-info">
+            <p class="grade-step">30분 달성</p>
+            <p class="grade-name">반달</p>
+          </div>
+          <p class="grade-prize"><span id="prize-half">150</span>명 추첨</p>
+        </div>
+        <div class="grade-card">
+          <div class="moon small phase-full" style="width:46px;height:46px;"></div>
+          <div class="grade-info">
+            <p class="grade-step">60분 달성</p>
+            <p class="grade-name">보름달</p>
+          </div>
+          <p class="grade-prize"><span id="prize-full">300</span>명 추첨</p>
+        </div>
+      </div>
+
+      <p class="landing-note">달이 찰수록 당첨 기회도 커집니다<br/>총 <strong id="prize-total">500명</strong> 커피쿠폰 추첨</p>
+
+      <p class="scope-note">연휴 4일(24~27일)간 MOVE R튜브+정규코스 학습시간을 합산하여 구분합니다.</p>
+
+      <button class="cta-primary" id="btn-to-lookup">나의 달 확인하기</button>
+    </section>
+
+    <!-- ===== 2. RC코드 조회 ===== -->
+    <section class="screen" id="screen-lookup">
+      <button class="back-link" data-target="landing">← 처음으로</button>
+      <h2 class="lookup-title">나의 달은<br/>얼마나 찼을까요?</h2>
+      <p class="lookup-desc">연휴 동안 학습한 시간을 확인해보세요.</p>
+
+      <p class="data-badge hidden" id="data-badge"></p>
+
+      <div class="lookup-form">
+        <input id="rc-input" type="text" inputmode="numeric" maxlength="12" placeholder="아이디를 입력해주세요" autocomplete="off" />
+        <button class="cta-primary" id="btn-search">나의 달 확인하기</button>
+        <p class="lookup-error" id="lookup-error" role="alert" aria-live="assertive">아이디를 다시 확인해주세요.</p>
+        <p class="lookup-hint" id="lookup-hint"></p>
+      </div>
+    </section>
+
+    <!-- ===== 3. 결과 ===== -->
+    <section class="screen" id="screen-result">
+      <button class="back-link" data-target="lookup">← 다시 조회하기</button>
+
+      <p class="result-name" id="result-name"></p>
+      <p class="result-code" id="result-code"></p>
+
+      <div class="result-moon-wrap" id="result-moon-wrap">
+        <div class="moon" id="result-moon"></div>
+        <div class="sparkles" id="result-sparkles"></div>
+      </div>
+
+      <h2 class="result-grade" id="result-grade-title"></h2>
+      <p class="result-time" id="result-time-text"></p>
+
+      <div class="progress-wrap">
+        <div class="progress-track" id="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="다음 등급까지 진행률"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="progress-meta"><span id="progress-percent">0%</span></div>
+      </div>
+      <p class="result-remain-text" id="result-remain-text"></p>
+
+      <div class="prize-banner" id="prize-banner"><span id="prize-text"></span></div>
+
+      <a class="cta-primary" id="cta-learn" href="#" onclick="return false;">MOVE·R튜브 학습하러 가기</a>
+
+      <div class="step-track" id="step-track">
+        <div class="step" data-idx="0"><span class="step-icon">🌑</span><span class="step-label">시작</span></div>
+        <div class="step-line" data-line="0"></div>
+        <div class="step" data-idx="1"><span class="step-icon">🌒</span><span class="step-label">1분</span></div>
+        <div class="step-line" data-line="1"></div>
+        <div class="step" data-idx="2"><span class="step-icon">🌓</span><span class="step-label">30분</span></div>
+        <div class="step-line" data-line="2"></div>
+        <div class="step" data-idx="3"><span class="step-icon">🌕</span><span class="step-label">60분</span></div>
+      </div>
+
+    </section>
+
+        
+    <footer class="app-footer">
+      <p class="data-asof" id="data-asof"></p>
+      <p class="notice-line">학습시간 데이터 익일 반영 후, MOVE 푸시알림 발송예정</p>
+    </footer>
+
+  </div>
+
+<script>
+
+/* ============================================================
+   Supabase 연결 설정 — 이미 채워져 있습니다. 고치지 않으셔도 됩니다.
+   ============================================================ */
+var SUPABASE_URL = 'https://jmjnuemsubbyqdkbucyn.supabase.co';
+var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imptam51ZW1zdWJieXFka2J1Y3luIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNTM0NTUsImV4cCI6MjA5NzkyOTQ1NX0.TSZySkfnYSvfv1GCsx6TKKAa3f0q-mzkwRo-GGK1aPw';
+/* ============================================================ */
+
+(function(){
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var PRIZE = { crescent:50, half:150, full:300 };
+  var PRIZE_TOTAL = PRIZE.crescent + PRIZE.half + PRIZE.full;
+
+  function $(id){ return document.getElementById(id); }
+  function comma(n){ return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+
+  /* ---------- 배경 ---------- */
+  var sky = $('sky');
+  for(var i=0;i<46;i++){
+    var s = document.createElement('div');
+    s.className = 'star';
+    var size = Math.random()*2 + 1;
+    s.style.width = size+'px'; s.style.height = size+'px';
+    s.style.top = (Math.random()*100)+'%'; s.style.left = (Math.random()*100)+'%';
+    s.style.animationDelay = (Math.random()*4)+'s';
+    if(reduceMotion){ s.style.animation='none'; s.style.opacity=0.4; }
+    sky.appendChild(s);
+  }
+  [[-60,-40,260,140],[70,60,220,120]].forEach(function(c){
+    var cl = document.createElement('div');
+    cl.className='cloud';
+    cl.style.top=c[0]+'px'; cl.style.left=c[1]+'%';
+    cl.style.width=c[2]+'px'; cl.style.height=c[3]+'px';
+    sky.appendChild(cl);
+  });
+
+  $('prize-crescent').textContent = PRIZE.crescent;
+  $('prize-half').textContent = PRIZE.half;
+  $('prize-full').textContent = PRIZE.full;
+  $('prize-total').textContent = PRIZE_TOTAL + '명';
+  $('lookup-hint').innerHTML = '';
+
+  /* ---------- 화면 전환 ---------- */
+  function showScreen(name){
+    document.querySelectorAll('.screen').forEach(function(el){ el.classList.remove('active'); });
+    $('screen-'+name).classList.add('active');
+    window.scrollTo(0,0);
+  }
+  $('btn-to-lookup').addEventListener('click', function(){ showScreen('lookup'); });
+  document.querySelectorAll('.back-link').forEach(function(btn){
+    btn.addEventListener('click', function(){ showScreen(btn.getAttribute('data-target')); });
+  });
+  $('cta-learn').addEventListener('click', function(e){ e.preventDefault(); });
+
+  /* ---------- Supabase 호출 ---------- */
+  function keyMissing(){
+    return !SUPABASE_KEY || SUPABASE_KEY.indexOf('붙여넣') >= 0;
+  }
+  async function rpc(name, body){
+    var res = await fetch(SUPABASE_URL + '/rest/v1/rpc/' + name, {
+      method:'POST',
+      headers:{
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body || {})
+    });
+    if(!res.ok){
+      var txt = '';
+      try{ txt = (await res.json()).message || ''; }catch(e){}
+      throw new Error('서버 응답 오류 ' + res.status + (txt ? ' — ' + txt : ''));
+    }
+    return await res.json();
+  }
+
+  /* ---------- 기준시각 ---------- */
+  var asofEl = $('data-asof');
+  (async function(){
+    if(keyMissing()){ asofEl.textContent = ''; return; }
+    try{
+      var rows = await rpc('hangawi_meta_get');
+      if(rows && rows.length){
+        if(rows[0].data_as_of) asofEl.textContent = '학습실적 기준: ' + rows[0].data_as_of;
+        if(rows[0].results_open === true) showResultsOpen();
+      }
+    }catch(e){ asofEl.textContent = ''; }
+  })();
+
+  // 추첨 결과가 공개되면 랜딩에 안내를 띄운다
+  function showResultsOpen(){
+    var cta = $('btn-to-lookup');
+    if(!cta || $('results-badge')) return;
+    var badge = document.createElement('p');
+    badge.id = 'results-badge';
+    badge.className = 'results-badge';
+    badge.textContent = '🎁 추첨 결과가 발표되었어요!';
+    cta.parentNode.insertBefore(badge, cta);
+    cta.textContent = '당첨 결과 확인하기';
+  }
+
+  /* ---------- 조회 ---------- */
+  var input = $('rc-input'), errorEl = $('lookup-error'), btn = $('btn-search');
+
+  function shake(){
+    if(reduceMotion) return;
+    input.classList.remove('shake'); void input.offsetWidth; input.classList.add('shake');
+  }
+  function showError(msg){
+    errorEl.textContent = msg || '아이디를 다시 확인해주세요.';
+    errorEl.classList.add('show');
+    shake();
+  }
+
+  async function performSearch(){
+    var raw = input.value.replace(/[\s,]/g,'');
+    errorEl.classList.remove('show');
+    if(!raw){ showError(); return; }
+    if(keyMissing()){ showError('설정이 아직 완료되지 않았습니다. 관리자에게 문의해주세요.'); return; }
+
+    btn.disabled = true;
+    var label = btn.textContent;
+    btn.textContent = '확인하는 중...';
+    try{
+      var rows = await rpc('hangawi_lookup', { p_id: raw });
+      if(!rows || !rows.length){ showError(); return; }
+      var r = rows[0];
+      if(r.data_as_of) asofEl.textContent = '학습실적 기준: ' + r.data_as_of;
+      renderResult({ id: raw, name: r.member_name || '', min: r.minutes || 0, grade: r.grade,
+                     resultsOpen: r.results_open === true, isWinner: r.is_winner === true,
+                     winGrade: r.win_grade || '', prize: r.prize || '' });
+      if(r.results_open === true) showResultsOpen();
+      showScreen('result');
+    }catch(err){
+      showError('잠시 후 다시 시도해주세요. 계속 안 되면 관리자에게 알려주세요.');
+      if(window.console) console.error(err);
+    }finally{
+      btn.disabled = false;
+      btn.textContent = label;
+    }
+  }
+  btn.addEventListener('click', performSearch);
+  input.addEventListener('keydown', function(e){ if(e.key === 'Enter') performSearch(); });
+
+  /* ---------- 결과 ---------- */
+  var moonEl = $('result-moon'), moonWrap = $('result-moon-wrap'), sparklesEl = $('result-sparkles');
+
+  function maskCode(code){
+    var s = String(code).trim();
+    if(s.length <= 4) return s;
+    var stars = '';
+    for(var k=0;k<s.length-4;k++){ stars += '*'; }
+    return s.slice(0,2) + stars + s.slice(-2);
+  }
+  function computeProgress(min){
+    if(min<=0) return { percent:0, remain:0 };
+    if(min<30) return { percent:(min/30)*100, remain:30-min };
+    if(min<60) return { percent:((min-30)/30)*100, remain:60-min };
+    return { percent:100, remain:0 };
+  }
+
+  function renderResult(rec){
+    var min = rec.min;
+    var grade = rec.grade || (min<=0 ? 'new' : (min<30 ? 'crescent' : (min<60 ? 'half' : 'full')));
+    var prog = computeProgress(min);
+
+    $('result-name').textContent = (rec.name || '') + ' RC님의 한가위 달';
+    $('result-code').textContent = '아이디 ' + maskCode(rec.id);
+
+    moonEl.className = 'moon phase-' + grade;
+    moonWrap.classList.toggle('is-full', grade === 'full');
+    if(grade === 'full' && sparklesEl.children.length === 0){
+      for(var i=0;i<6;i++){
+        var sp = document.createElement('div');
+        sp.className = 'sparkle';
+        sp.style.top = (Math.random()*90)+'%';
+        sp.style.left = (Math.random()*90)+'%';
+        sp.style.animationDelay = (Math.random()*2)+'s';
+        sparklesEl.appendChild(sp);
+      }
+    }
+
+    var titleEl = $('result-grade-title'), timeEl = $('result-time-text');
+    var remainEl = $('result-remain-text'), prizeWrap = $('prize-banner'), prizeText = $('prize-text');
+
+    if(grade === 'new'){
+      titleEl.textContent = '아직 달이 뜨지 않았어요!';
+      timeEl.textContent = '현재 학습시간 0분';
+      remainEl.textContent = 'MOVE·R튜브 학습을 시작하면 🌒 초승달이 떠올라요.';
+      prizeWrap.classList.add('hidden');
+    } else if(grade === 'crescent'){
+      titleEl.textContent = '초승달';
+      timeEl.textContent = '현재 ' + comma(min) + '분 학습했어요!';
+      remainEl.textContent = '🌓 반달까지 ' + prog.remain + '분 남았어요!';
+      prizeWrap.classList.remove('hidden');
+      prizeText.textContent = '🎁 현재 초승달 RC ' + PRIZE.crescent + '명 추첨 대상입니다.';
+    } else if(grade === 'half'){
+      titleEl.textContent = '반달';
+      timeEl.textContent = '현재 ' + comma(min) + '분 학습했어요!';
+      remainEl.textContent = '🌕 보름달까지 ' + prog.remain + '분 남았어요!';
+      prizeWrap.classList.remove('hidden');
+      prizeText.textContent = '🎁 현재 반달 RC ' + PRIZE.half + '명 추첨 대상입니다.';
+    } else {
+      titleEl.textContent = '보름달 완성!';
+      timeEl.textContent = '총 ' + comma(min) + '분 학습했어요!';
+      remainEl.textContent = '🎉 한가위 보름달을 완성했어요!';
+      prizeWrap.classList.remove('hidden');
+      prizeText.textContent = '🎁 보름달 RC ' + PRIZE.full + '명 추첨 대상입니다.';
+    }
+
+    prizeWrap.classList.remove('is-winner','is-lose');
+    remainEl.style.display = '';
+    if(rec.resultsOpen){
+      // 이벤트가 끝났으니 '몇 분 남았어요' 문구는 숨긴다
+      remainEl.style.display = 'none';
+      prizeWrap.classList.remove('hidden');
+      prizeText.textContent = '';
+      var GRADE_KO = { 'new':'', 'crescent':'초승달', 'half':'반달', 'full':'보름달' };
+      var head = document.createElement('span');
+      head.className = 'prize-head';
+      var sub = document.createElement('span');
+      sub.className = 'prize-sub';
+      if(rec.isWinner){
+        var g = rec.winGrade || GRADE_KO[grade] || '';
+        head.textContent = '🎉 축하합니다! ' + (g ? g + ' 추첨에 ' : '') + '당첨되셨어요!';
+        sub.textContent = rec.prize ? ('경품: ' + rec.prize) : '';
+        prizeWrap.classList.add('is-winner');
+      }else if(grade === 'new'){
+        head.textContent = '이번 추첨 대상은 아니었어요.';
+        sub.textContent = '다음 이벤트에서 꼭 만나요!';
+        prizeWrap.classList.add('is-lose');
+      }else{
+        head.textContent = '아쉽게도 이번 추첨에는 당첨되지 않았어요.';
+        sub.textContent = '참여해주셔서 감사합니다 🌕';
+        prizeWrap.classList.add('is-lose');
+      }
+      prizeText.appendChild(head);
+      if(sub.textContent) prizeText.appendChild(sub);
+    }
+
+    var pct = Math.round(prog.percent);
+    $('progress-fill').style.width = prog.percent + '%';
+    $('progress-percent').textContent = pct + '%';
+    $('progress-track').setAttribute('aria-valuenow', pct);
+
+    var idx = min<=0 ? 0 : (min<30 ? 1 : (min<60 ? 2 : 3));
+    document.querySelectorAll('#step-track .step').forEach(function(st){
+      var n = parseInt(st.getAttribute('data-idx'),10);
+      st.classList.toggle('reached', n <= idx);
+      st.classList.toggle('current', n === idx);
+    });
+    document.querySelectorAll('#step-track .step-line').forEach(function(ln){
+      ln.classList.toggle('reached', parseInt(ln.getAttribute('data-line'),10) < idx);
+    });
+  }
+})();
+
+</script>
+</body>
+</html>
