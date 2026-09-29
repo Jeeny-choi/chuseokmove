@@ -473,7 +473,7 @@
 
       <div class="prize-banner" id="prize-banner"><span id="prize-text"></span></div>
 
-      <a class="cta-primary" id="cta-learn" href="#" onclick="return false;">MOVE·R튜브 학습하러 가기</a>
+      <a class="cta-primary" id="cta-learn" href="https://app.touchclass.com/link/samsungfire?ttube_video_id=4oXWpX1rJOENPYDl5PVfYA&amp;cpId=samsungfire" target="_blank" rel="noopener">MOVE·R튜브 학습하러 가기</a>
 
       <div class="step-track" id="step-track">
         <div class="step" data-idx="0"><span class="step-icon">🌑</span><span class="step-label">시작</span></div>
@@ -548,7 +548,6 @@ var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSI
   document.querySelectorAll('.back-link').forEach(function(btn){
     btn.addEventListener('click', function(){ showScreen(btn.getAttribute('data-target')); });
   });
-  $('cta-learn').addEventListener('click', function(e){ e.preventDefault(); });
 
   /* ---------- Supabase 호출 ---------- */
   function keyMissing(){
